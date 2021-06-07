@@ -1,13 +1,14 @@
 import React from "react";
 
-const Button = ({ buttonText }) => {
+const Button = ({ buttonContent, callback }) => {
     return (
-        <button className="btn btn-secondary" type="submit">{buttonText}</button>
+        <button className="btn btn-secondary" onClick={callback} type="button">{buttonContent}</button>
     )
 };
 
 Button.defaultProps = {
-    buttonText: "Button"
+    buttonContent: "Button",
+    callback: () => console.log("This is a button callback!")
 };
 
 export default Button;

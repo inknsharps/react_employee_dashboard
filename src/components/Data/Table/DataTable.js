@@ -20,7 +20,7 @@ const DataTable = () => {
     const [ tableRows, setTableRows ] = useState([]);
 
     // This state hook is for the filtered array of users that we will render in the app.
-    const [ filteredTableRows, setFilteredTableRows ] = useState([])
+    const [ filteredTableRows, setFilteredTableRows ] = useState([]);
 
     // This state hook is strictly for handling inputs from the search bar.
     const [ input, setInput ] = useState("");
@@ -57,8 +57,8 @@ const DataTable = () => {
         setFilteredTableRows(filter);
     }, [input, tableRows]);
 
-    const generateTableRows = (array) => {
-        return array.map((user, index) => {
+    const generateTableRows = (usersArray) => {
+        return usersArray.map((user, index) => {
             return (
                 <TableRow 
                     key={index}

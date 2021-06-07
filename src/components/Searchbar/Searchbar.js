@@ -5,9 +5,9 @@ const Searchbar = ({ handleInputChange }) => {
     return (
         <form className="d-flex">
             <input 
-                className="form-control me-2" 
+                className="form-control bg-dark text-center text-light" 
                 type="search" 
-                placeholder="Search" 
+                placeholder="Type to filter users here..." 
                 aria-label="Search" 
                 onChange={handleInputChange}
             />

@@ -3,7 +3,7 @@ import "./TableHeader.css";
 
 const TableHeader = () => {
     return (
-        <thead>
+        <thead className="TableHeader">
             <tr>
                 <th scope="col">Image</th>
                 <th scope="col">Name</th>
