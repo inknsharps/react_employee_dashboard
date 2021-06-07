@@ -3,16 +3,22 @@
 
 const BASEURL = "https://randomuser.me/api/?inc=picture,name,phone,email,dob&nat=us,ca,de,dk,es,fi,fr,gb,no,nl,nz,tr&results=15";
 
-const generateUsers = () => {
-    return fetch(BASEURL, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        mode: 'cors',
-        cache: 'default'
-      })
-        .then(response => response.json());
+const generateUsers = async () => {
+    try {
+        const fetchedUsers = await fetch(BASEURL, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors',
+            cache: 'default'
+            }
+        );
+        const parsedUsers = await fetchedUsers.json();
+        return parsedUsers;
+    } catch (error) {
+        alert("Error in fetching API!");
+    }
 };
 
 export default generateUsers;

@@ -3,6 +3,7 @@ import "./DataTable.css";
 import generateUsers from "../../../utils/randomUserAPI";
 import TableHeader from "../TableHeader/TableHeader";
 import TableRow from "../TableRow/TableRow";
+import Searchbar from "../../Searchbar/Searchbar";
 
 // The lovely world of React hooks has destroyed my morale for building this currently, so time for some explanation before I forget everything:
 
@@ -14,19 +15,24 @@ import TableRow from "../TableRow/TableRow";
 
 const DataTable = () => {
     const [ tableRows, setTableRows ] = useState([]);
+    const [ input, setInput ] = useState("");
 
     useEffect(() => {
+        console.log("Generating users...");
         generateUsers()
         .then(
-            ({ results }) => setTableRows(results), 
-            error => alert(error)
+            ({ results }) => {
+                return setTableRows(results);
+            }, 
+            (error) => alert(error)
         )
-    }, []);
+    }, [input]);
 
     const generateTableRows = () => {
-        return tableRows.map(user => {
+        return tableRows.map((user, index) => {
             return (
                 <TableRow 
+                    key={index}
                     image={user.picture.medium}
                     name={`${user.name.first} ${user.name.last}`}
                     phone={user.phone}
@@ -36,12 +42,37 @@ const DataTable = () => {
             )
         });
     };
+
+    // Figure out how to link this to the filter???
     
+    const handleInputChange = event => {
+        const { value } = event.target;
+        setInput(value);
+    };
+
+    // Steps for this filter nonsense:
+    // 0.5) Make sure we're able to handle the changes for the filter
+    // 1) Get all the data that we can filter out
+    // 2) Run a filter method on the tableRows state array
+    // 3) setTableRows to the new filtered array
+
+    const filterTableRows = () => {
+        const filter = input;
+        return tableRows.filter(user => {
+            const [ { first, last }, email, { date }, phone ] = Object.values(user);
+            const valuesString = `${first} ${last} ${email} ${new Date(date).toLocaleDateString()} ${phone}`;
+            return valuesString.includes(filter) !== -1;
+        })
+    }
+
     return (
         <div className="DataTable">
-            <table className="table table-striped">
+            <Searchbar handleInputChange={handleInputChange}/>
+            <table className="table table-dark table-striped">
                 <TableHeader />
-                {generateTableRows()}
+                <tbody>
+                    {generateTableRows()}
+                </tbody>
             </table>
         </div>
     )
