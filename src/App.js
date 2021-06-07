@@ -6,7 +6,7 @@ import Footer from "./components/Footer/Footer";
 function App() {
     return (
         <div className="App">
-            <Navbar navbarTheme="dark" backgroundColor="primary" navTitle="Employee Dashboard" />
+            <Navbar navbarTheme="dark" backgroundColor="dark" navTitle="Employee Dashboard" />
             <Main />
             <Footer />
         </div>

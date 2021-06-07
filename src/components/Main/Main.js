@@ -1,9 +1,11 @@
 import React from "react";
+import "./Main.css";
+import DataTable from "../Data/Table/DataTable";
 
 const Main = () => {
     return (
-        <main>
-            <h1> Main Text Here.</h1>
+        <main className="Main">
+            <DataTable />
         </main>
     );
 };
