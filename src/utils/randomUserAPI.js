@@ -1,9 +1,16 @@
-import axios from "axios";
-
 const BASEURL = "https://randomuser.me/api/?inc=picture,name,phone,email,dob&results=15";
 
-export const randomUserAPI = {
-    search: function(query) {
-        return axios.get(BASEURL + query);
-    }
+const generateUsers = () => {
+    // return axios.get(BASEURL + query);
+    return fetch(BASEURL, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        mode: 'cors',
+        cache: 'default'
+      })
+        .then(response => response.json());
 };
+
+export default generateUsers;
