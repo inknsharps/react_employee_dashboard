@@ -1,8 +1,10 @@
 import React from "react";
+import "./TableRow.css";
 
-const TableRow = ({ image, name, phone, email, birthDate }) => {
+const TableRow = ({ id, image, name, phone, email, birthDate }) => {
     return (
         <tr>
+            <th scope="row">{id}</th>
             <td><img src={image} alt={name} /></td>
             <td>{name}</td>
             <td>{phone}</td>

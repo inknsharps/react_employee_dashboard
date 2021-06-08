@@ -62,6 +62,7 @@ const DataTable = () => {
             return (
                 <TableRow 
                     key={index}
+                    id={index + 1}
                     image={user.picture.medium}
                     name={`${user.name.first} ${user.name.last}`}
                     phone={user.phone}
@@ -79,12 +80,14 @@ const DataTable = () => {
     return (
         <div className="DataTable">
             <Searchbar handleInputChange={handleInputChange}/>
-            <table className="table table-dark table-striped">
-                <TableHeader />
-                <tbody>
-                    {generateTableRows(filteredTableRows)}
-                </tbody>
-            </table>
+            <div className="table-responsive">
+                <table className="table table-dark table-striped">
+                    <TableHeader />
+                    <tbody>
+                        {generateTableRows(filteredTableRows)}
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 };
