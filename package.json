@@ -2,7 +2,7 @@
   "name": "react_employee_dashboard",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.com/inknsharps/react_employee_dashboard",
+  "homepage": "http://inknsharps.github.io/react_employee_dashboard/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.13.0",
     "@testing-library/react": "^11.2.7",
