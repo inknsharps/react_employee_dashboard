@@ -3,9 +3,9 @@ import "./TableRow.css";
 
 const TableRow = ({ id, image, name, phone, email, birthDate }) => {
     return (
-        <tr>
+        <tr className="TableRow-tr">
             <th scope="row">{id}</th>
-            <td><img src={image} alt={name} /></td>
+            <td><img className="TableRow-img" src={image} alt={name} /></td>
             <td>{name}</td>
             <td>{phone}</td>
             <td><a className="text-light" href={`mailto:${email}`}>{email}</a></td>

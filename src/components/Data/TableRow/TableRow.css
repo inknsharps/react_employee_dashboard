@@ -1,7 +1,7 @@
-img {
+.TableRow-img {
     border-radius: 50%;
 }
 
-tr {
+.TableRow-tr {
     vertical-align: middle;
 }
