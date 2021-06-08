@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import useInput from "../../../hooks/useInput";
+import useToggle from "../../../hooks/useToggle";
 import "./DataTable.css";
 import generateUsers from "../../../utils/randomUserAPI";
 import TableHeader from "../TableHeader/TableHeader";
@@ -21,11 +23,11 @@ const DataTable = () => {
     // This state hook is for the filtered array of users that we will render in the app.
     const [ filteredTableRows, setFilteredTableRows ] = useState([]);
 
-    // This state hook is for toggling the ascending or descending sort order of the data. A boolean is used since we only have one category to sort by, and only two possible orders.
-    const [ sortState, setSortState ] = useState(true);
-
-    // This state hook is strictly for handling inputs from the search bar.
-    const [ input, setInput ] = useState("");
+    // This custom hook is for toggling the ascending or descending sort order of the data. A boolean is used since we only have one category to sort by, and only two possible orders.
+    const [ sortState, setSortState ] = useToggle(true);
+    
+    // This custom hook is strictly for handling inputs from the search bar.
+    const [ input, setInput ] = useInput("");
 
     // This ref hook is strictly for grabbing a reference to the current users that are displayed, so we don't have to re-render the app every time we need to access that info.
     const currentUsers = useRef([]);
@@ -92,20 +94,12 @@ const DataTable = () => {
             )
         });
     };
-    
-    const handleInputChange = event => {
-        setInput(event.target.value);
-    };
-
-    const toggleSortState = () => {
-        setSortState(!sortState);
-    };
 
     return (
         <div className="DataTable bg-dark">
-            <Searchbar handleInputChange={handleInputChange}/>
+            <Searchbar handleInputChange={setInput}/>
             <div className="DataTable-button">
-                <Button buttonContent={sortState ? "Sort Users Alphabetically Descending" : "Sort Users Alphabetically Ascending"} callback={toggleSortState}/>
+                <Button buttonContent={sortState ? "Sort Users Alphabetically Descending" : "Sort Users Alphabetically Ascending"} callback={setSortState}/>
             </div>
             <div className="table-responsive">
                 <table className="table table-dark table-striped">
