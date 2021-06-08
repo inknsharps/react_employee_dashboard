@@ -6,7 +6,10 @@ const useInput = (initialInput = "") => {
     const handleInputChange = event => {
         setInput(event.target.value);
     };
-    return [input, handleInputChange]
+    const resetInputChange = () => {
+        setInput("")
+    }
+    return [input, handleInputChange, resetInputChange]
 };
 
 export default useInput;
