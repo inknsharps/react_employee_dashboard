@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import useInput from "../../../hooks/useInput";
-import useToggle from "../../../hooks/useToggle";
 import "./DataTable.css";
-import generateUsers from "../../../utils/randomUserAPI";
+
+// Required compoonents
 import TableHeader from "../TableHeader/TableHeader";
 import TableRow from "../TableRow/TableRow";
 import Searchbar from "../../Searchbar/Searchbar";
 import Button from "../../Button/Button";
+
+// Hooks
+import useInput from "../../../hooks/useInput";
+import useToggle from "../../../hooks/useToggle";
+
+// Utils
+import generateUsers from "../../../utils/randomUserAPI";
 import handleSort from "../../../utils/handleSort";
 
 // The lovely world of React hooks has destroyed my morale for building this currently, so time for some explanation before I forget everything:
