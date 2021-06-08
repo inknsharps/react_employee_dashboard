@@ -4,6 +4,8 @@ import generateUsers from "../../../utils/randomUserAPI";
 import TableHeader from "../TableHeader/TableHeader";
 import TableRow from "../TableRow/TableRow";
 import Searchbar from "../../Searchbar/Searchbar";
+import Button from "../../Button/Button";
+import handleSort from "../../../utils/handleSort";
 
 // The lovely world of React hooks has destroyed my morale for building this currently, so time for some explanation before I forget everything:
 
@@ -72,17 +74,7 @@ const DataTable = () => {
     // This is why the useRef hook was used, and updated any time setFilteredTableRows was called, so we have a carbon copy of filteredTableRows to use without rerendering the application infinitely.
     useEffect(() => {
         const sortedUsers = [...currentUsers.current];
-        sortedUsers.sort((a, b) => {
-            const nameA = a.name.first;
-            const nameB = b.name.first;
-            if (nameA < nameB) {
-                return -1;
-            }
-            if (nameA > nameB) {
-                return 1;
-            }
-            return 0;
-        });
+        handleSort(sortedUsers, sortState);
         setFilteredTableRows(sortedUsers);
     }, [sortState]);
 
@@ -108,16 +100,18 @@ const DataTable = () => {
 
     const toggleSortState = () => {
         setSortState(!sortState);
-        console.log(sortState);
     };
 
     return (
-        <div className="DataTable">
+        <div className="DataTable bg-dark">
             <Searchbar handleInputChange={handleInputChange}/>
+            <div className="DataTable-button">
+                <Button buttonContent={sortState ? "Sort Users Alphabetically Descending" : "Sort Users Alphabetically Ascending"} callback={toggleSortState}/>
+            </div>
             <div className="table-responsive">
                 <table className="table table-dark table-striped">
                     <TableHeader />
-                    <tbody onClick={toggleSortState}>
+                    <tbody>
                         {generateTableRows(filteredTableRows)}
                     </tbody>
                 </table>

@@ -2,7 +2,7 @@ import React from "react";
 
 const Button = ({ buttonContent, callback }) => {
     return (
-        <button className="btn btn-secondary" onClick={callback} type="button">{buttonContent}</button>
+        <button className="btn btn-secondary m-4" onClick={callback} type="button">{buttonContent}</button>
     )
 };
 
