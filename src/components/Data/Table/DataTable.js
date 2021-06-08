@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./DataTable.css";
 import generateUsers from "../../../utils/randomUserAPI";
 import TableHeader from "../TableHeader/TableHeader";
@@ -9,7 +9,7 @@ import Searchbar from "../../Searchbar/Searchbar";
 
 // We're passing states from the DataTable component to the TableRow component as a prop. 
 // Two states are set up specifically to be passed to the TableRow component- we have one that is the user data when the Fetch API call is made, and one that will be used for a filter.
-// We also have a state set up for the input.
+// We also have a state set up for the input, a state for the sort, and a ref for the current users display (to avoid some nasty infinite loops).
 
 // Regarding AJAX calls, the React documentation (https://reactjs.org/docs/faq-ajax.html) states that you should populate data from an AJAX call in the componentDidMount lifecycle method. In our case, because we're using a functional component, the useEffect() hook is what we need (currently, I have it set to only be populated when the component first loads).
 
@@ -22,17 +22,25 @@ const DataTable = () => {
     // This state hook is for the filtered array of users that we will render in the app.
     const [ filteredTableRows, setFilteredTableRows ] = useState([]);
 
+    // This state hooks is for toggling the ascending or descending sort order of the data.
+    const [ sortState, setSortState ] = useState(true);
+
     // This state hook is strictly for handling inputs from the search bar.
     const [ input, setInput ] = useState("");
 
+    // This ref hook is strictly for grabbing a reference to the current users array, so we don't have to re-render the app every time we need to access that info.
+    const currentUsers = useRef([]);
+
     // This first useEffect hook handles page load effects.
     // When the DataTable component is mounted (on page load), we call the generateUsers() function which returns an array of users from the Random User API. We then call the setters for the state hooks we set up earlier to set the state of both tableRows and filteredTableRows to equal that returned array. Initially, both states will be the same, of course.
+    // We also set our useRef hook object to also contain that data.
     // The second argument of this useEffect() is empty because we only want this to run once (ie. page load).
     useEffect(() => {
         console.log("Generating users...");
         generateUsers()
         .then(
             ({ results }) => {
+                currentUsers.current = results;
                 setFilteredTableRows(results);
                 return setTableRows(results);
             }, 
@@ -45,6 +53,7 @@ const DataTable = () => {
     // We define a function called filterTableRows, which we pass in an array, and filter argument. In our case, our arrays of users are objects, so we call Object.values() to get an array of the values on each object, then use array destructuring to destructure each value into an individual variable. We then join those varibles together into a string, then we use indexOf() (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf), pass the filter into it, and if it is found, then we return that user to the new array.
     // So, in our case we pass in the tableRows state, use our input state as the filter, and then set the filteredTableRows to the filter (which is also what we use to render the original element).
     // The weird and wonderful part of this filter function is that when the input is empty (""), running the filter function returns 0 for all the elements in the array, so it just returns the entire original user array we fetched in the first place!
+    // Additionally, we also update the currentUsers useRef object since I want the ability to sort after a filter has been run.
     useEffect(() => {
         const filterTableRows = (array, filter) => {
             return array.filter(user => {
@@ -54,8 +63,28 @@ const DataTable = () => {
             })
         }
         const filter = filterTableRows(tableRows, input);
+        currentUsers.current = filter;
         setFilteredTableRows(filter);
     }, [input, tableRows]);
+
+    // This third useEffect hook handles sorting effects.
+    // Initially, I tried using the filteredTableRows state, however, it would require it as a dependency in this hook, and on load that caused an infinite loop.
+    // This is why the useRef hook was used, and updated any time setFilteredTableRows was called, so we have a carbon copy of filteredTableRows to use without rerendering the application infinitely.
+    useEffect(() => {
+        const sortedUsers = [...currentUsers.current];
+        sortedUsers.sort((a, b) => {
+            const nameA = a.name.first;
+            const nameB = b.name.first;
+            if (nameA < nameB) {
+                return -1;
+            }
+            if (nameA > nameB) {
+                return 1;
+            }
+            return 0;
+        });
+        setFilteredTableRows(sortedUsers);
+    }, [sortState]);
 
     const generateTableRows = (usersArray) => {
         return usersArray.map((user, index) => {
@@ -77,13 +106,18 @@ const DataTable = () => {
         setInput(event.target.value);
     };
 
+    const toggleSortState = () => {
+        setSortState(!sortState);
+        console.log(sortState);
+    };
+
     return (
         <div className="DataTable">
             <Searchbar handleInputChange={handleInputChange}/>
             <div className="table-responsive">
                 <table className="table table-dark table-striped">
                     <TableHeader />
-                    <tbody>
+                    <tbody onClick={toggleSortState}>
                         {generateTableRows(filteredTableRows)}
                     </tbody>
                 </table>
