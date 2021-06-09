@@ -7,7 +7,7 @@ const useInput = (initialInput = "") => {
         setInput(event.target.value);
     };
     const resetInputChange = () => {
-        setInput("")
+        setInput("");
     }
     return [input, handleInputChange, resetInputChange]
 };
