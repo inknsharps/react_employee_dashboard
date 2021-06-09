@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./DataTable.css";
 
 // Required compoonents
@@ -14,12 +14,13 @@ import useToggle from "../../../hooks/useToggle";
 // Utils
 import generateUsers from "../../../utils/randomUserAPI";
 import handleSort from "../../../utils/handleSort";
+import handleFilter from "../../../utils/handleFilter";
 
 // The lovely world of React hooks has destroyed my morale for building this currently, so time for some explanation before I forget everything:
 
 // We're passing states from the DataTable component to the TableRow component as a prop. 
 // Two states are set up specifically to be passed to the TableRow component- we have one that is the user data when the Fetch API call is made, and one that will be used for a filter.
-// We also have a state set up for the input, a state for the sort, and a ref for the current users display (to avoid some nasty infinite loops).
+// We also have a state set up for the input, a state for the sort type, and states for the current users displayed, and original users array.
 
 // Regarding AJAX calls, the React documentation (https://reactjs.org/docs/faq-ajax.html) states that you should populate data from an AJAX call in the componentDidMount lifecycle method. In our case, because we're using a functional component, the useEffect() hook is what we need (currently, I have it set to only be populated when the component first loads).
 
@@ -35,26 +36,25 @@ const DataTable = () => {
     // This custom hook is strictly for handling inputs from the search bar.
     const [ input, setInput ] = useInput("");
 
-    // This ref hook is strictly for grabbing a reference to the current users that are displayed, so we don't have to re-render the app every time we need to access that info.
-    const currentUsers = useRef([]);
+    // This state hook is strictly for grabbing a reference to the current users that are displayed.
+    const [ currentUsers, setCurrentUsers ] = useState([]);
 
-    // This ref is for the original array of users that we get from the Random User API. Again, a ref hook is used so we don't cause unnecessary rerendering.
-    const originalUsers = useRef([]);
+    // This state hook is for the original array of users that we get from the Random User API.
+    const [ originalUsers, setOriginalUsers ] = useState([]);
 
     // This first useEffect hook handles page load effects.
     // When the DataTable component is mounted (on page load), we call the generateUsers() function which returns an array of users from the Random User API. We then call the setters for the state and ref hooks we set up earlier to set them to equal that returned array. Initially, all states and refs will be the same, of course.
     // The second argument of this useEffect() is empty because we only want this to run once (ie. page load).
     useEffect(() => {
-        console.log("Generating users...");
         generateUsers()
         .then(
             ({ results }) => {
-                currentUsers.current = results;
-                originalUsers.current = results;
+                setCurrentUsers(results);
+                setOriginalUsers(results);
                 setFilteredTableRows(results);
-            }, 
-            (error) => alert(error)
+            }
         )
+        .catch(error => console.log(error));
     }, []);
 
     // This second useEffect hook handles filtering effects.
@@ -64,32 +64,25 @@ const DataTable = () => {
     // The weird and wonderful part of this filter function is that when the input is empty (""), running the filter function returns 0 for all the elements in the array, so it just returns the entire original user array we fetched in the first place!
     // Additionally, we also update the currentUsers useRef object since I want the ability to sort the displayed users after a filter has been run. 
     useEffect(() => {
-        const filterTableRows = (array, filter) => {
-            return array.filter(user => {
-                const [ { first, last }, email, { date }, phone ] = Object.values(user);
-                const valuesString = `${first} ${last} ${email} ${new Date(date).toLocaleDateString()} ${phone}`;
-                return valuesString.indexOf(filter) !== -1;
-            })
-        }
-        const filter = filterTableRows(originalUsers.current, input);
-        currentUsers.current = filter;
-        setFilteredTableRows(filter);
-    }, [input]);
+        const filteredUsers = handleFilter(originalUsers, input);
+        setCurrentUsers(filteredUsers);
+        setFilteredTableRows(filteredUsers);
+    }, [input, originalUsers]);
 
     // This third useEffect hook handles sorting effects.
     // Initially, I tried using the filteredTableRows state, however, it would require it as a dependency in this hook, and on load that caused an infinite loop.
     // This is why the useRef hook was used, and updated any time setFilteredTableRows was called, so we have a carbon copy of filteredTableRows to use without rerendering the application infinitely.
     useEffect(() => {
-        const sortedUsers = [...currentUsers.current];
+        const sortedUsers = [...currentUsers];
         handleSort(sortedUsers, sortState);
         setFilteredTableRows(sortedUsers);
-    }, [sortState]);
+    }, [sortState, currentUsers]);
 
     const generateTableRows = (usersArray) => {
         return usersArray.map((user, index) => {
             return (
                 <TableRow 
-                    key={index}
+                    key={user.email}
                     id={index + 1}
                     image={user.picture.medium}
                     name={`${user.name.first} ${user.name.last}`}

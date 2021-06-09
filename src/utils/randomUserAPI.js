@@ -17,7 +17,7 @@ const generateUsers = async () => {
         const parsedUsers = await fetchedUsers.json();
         return parsedUsers;
     } catch (error) {
-        alert("Error in fetching API!");
+        console.log("Error in fetching API!");
     }
 };
 
